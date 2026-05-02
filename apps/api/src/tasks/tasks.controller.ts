@@ -15,6 +15,11 @@ export class TasksController {
     return this.tasksService.create(req.user.id, dto);
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string, @Request() req) {
+    return this.tasksService.findOne(req.user.id, id);
+  }
+
   @Get('list/:listId')
   findByList(@Param('listId') listId: string, @Request() req) {
     return this.tasksService.findByList(req.user.id, listId);

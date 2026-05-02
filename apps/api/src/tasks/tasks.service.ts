@@ -29,6 +29,16 @@ export class TasksService {
     return task;
   }
 
+  async findOne(userId: string, id: string) {
+    const task = await this.prisma.task.findUnique({
+      where: { id },
+      include: { list: { select: { boardId: true } } },
+    });
+    if (!task) throw new NotFoundException('Task not found');
+    await this.boardAccess.assertOwnership(userId, task.list.boardId);
+    return task;
+  }
+
   async findByList(userId: string, listId: string) {
     const boardId = await this.boardAccess.getBoardIdFromList(listId);
     await this.boardAccess.assertOwnership(userId, boardId);
