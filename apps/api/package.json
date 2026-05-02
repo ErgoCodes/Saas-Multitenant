@@ -23,6 +23,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.4.15",
     "@nestjs/platform-socket.io": "^10.4.15",
+    "@nestjs/throttler": "^6.5.0",
     "@nestjs/websockets": "^10.4.15",
     "@prisma/client": "^6.1.0",
     "@task-manager/types": "workspace:*",
