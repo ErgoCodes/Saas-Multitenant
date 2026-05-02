@@ -2,15 +2,15 @@
 
 import { use } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuthStore } from '../../stores/auth';
-import { api } from '../../lib/api';
-import { getSocket } from '../../lib/socket';
+import { useAuthStore } from '../../../stores/auth';
+import { api } from '../../../lib/api';
+import { getSocket } from '../../../lib/socket';
 import { WsEvent } from '@task-manager/types';
 import { Board, List, Task } from '@task-manager/types';
-import Header from '../../components/Header';
-import ListColumn from '../../components/ListColumn';
-import CreateListModal from '../../components/CreateListModal';
-import ProtectedRoute from '../../components/ProtectedRoute';
+import Header from '../../../components/Header';
+import ListColumn from '../../../components/ListColumn';
+import CreateListModal from '../../../components/CreateListModal';
+import ProtectedRoute from '../../../components/ProtectedRoute';
 
 export default function BoardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: boardId } = use(params);
@@ -55,12 +55,13 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
                 {board.description && <p className="text-sm text-gray-600">{board.description}</p>}
               </div>
               <div className="flex gap-4">
-                {board.lists?.map((list) => (
+                {board.lists?.map((list: List & { tasks: Task[] }) => (
                   <ListColumn
                     key={list.id}
                     list={list}
                     boardId={boardId}
                     onTaskMove={handleTaskMove}
+                    onListReorder={handleListReorder}
                   />
                 ))}
                 <CreateListModal boardId={boardId} />
