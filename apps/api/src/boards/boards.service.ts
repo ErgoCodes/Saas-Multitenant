@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { WebsocketGateway } from '../websocket/websocket.gateway';
+import { BoardAccessService } from '../common/board-access.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { WsEvent } from '@task-manager/types';
@@ -10,6 +11,7 @@ export class BoardsService {
   constructor(
     private prisma: PrismaService,
     private wsGateway: WebsocketGateway,
+    private boardAccess: BoardAccessService,
   ) {}
 
   async create(userId: string, dto: CreateBoardDto) {
@@ -21,7 +23,6 @@ export class BoardsService {
       },
       include: { lists: true },
     });
-    this.wsGateway.emitToBoard(board.id, WsEvent.BOARD_CREATED, board);
     return board;
   }
 
@@ -33,7 +34,8 @@ export class BoardsService {
   }
 
   async findOne(userId: string, id: string) {
-    const board = await this.prisma.board.findUnique({
+    await this.boardAccess.assertOwnership(userId, id);
+    return this.prisma.board.findUnique({
       where: { id },
       include: {
         lists: {
@@ -46,15 +48,10 @@ export class BoardsService {
         },
       },
     });
-    if (!board) throw new NotFoundException('Board not found');
-    if (board.ownerId !== userId) throw new ForbiddenException('Access denied');
-    return board;
   }
 
   async update(userId: string, id: string, dto: UpdateBoardDto) {
-    const board = await this.prisma.board.findUnique({ where: { id } });
-    if (!board) throw new NotFoundException('Board not found');
-    if (board.ownerId !== userId) throw new ForbiddenException('Access denied');
+    await this.boardAccess.assertOwnership(userId, id);
     const updated = await this.prisma.board.update({
       where: { id },
       data: dto,
@@ -65,10 +62,12 @@ export class BoardsService {
   }
 
   async delete(userId: string, id: string) {
-    const board = await this.prisma.board.findUnique({ where: { id } });
-    if (!board) throw new NotFoundException('Board not found');
-    if (board.ownerId !== userId) throw new ForbiddenException('Access denied');
-    await this.prisma.board.delete({ where: { id } });
+    await this.boardAccess.assertOwnership(userId, id);
+    await this.prisma.$transaction(async (tx) => {
+      await tx.task.deleteMany({ where: { list: { boardId: id } } });
+      await tx.list.deleteMany({ where: { boardId: id } });
+      await tx.board.delete({ where: { id } });
+    });
     this.wsGateway.emitToBoard(id, WsEvent.BOARD_DELETED, { id });
     return { id };
   }

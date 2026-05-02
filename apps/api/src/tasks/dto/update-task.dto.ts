@@ -1,13 +1,15 @@
-import { IsString, IsOptional, IsEnum, IsInt } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsNumber, MaxLength } from 'class-validator';
 import { Priority, TaskStatus } from '@task-manager/types';
 
 export class UpdateTaskDto {
   @IsString()
   @IsOptional()
+  @MaxLength(255)
   title?: string;
 
   @IsString()
   @IsOptional()
+  @MaxLength(2000)
   description?: string;
 
   @IsEnum(Priority)
@@ -18,7 +20,7 @@ export class UpdateTaskDto {
   @IsOptional()
   status?: TaskStatus;
 
-  @IsInt()
+  @IsNumber()
   @IsOptional()
   order?: number;
 

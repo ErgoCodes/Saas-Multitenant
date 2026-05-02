@@ -1,11 +1,12 @@
-import { IsString, IsOptional, IsInt } from 'class-validator';
+import { IsString, IsOptional, IsNumber, MaxLength } from 'class-validator';
 
 export class UpdateListDto {
   @IsString()
   @IsOptional()
+  @MaxLength(255)
   title?: string;
 
-  @IsInt()
+  @IsNumber()
   @IsOptional()
   order?: number;
 }

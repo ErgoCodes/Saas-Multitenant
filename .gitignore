@@ -17,3 +17,8 @@ dist/
 .idea/
 *.swp
 *.swo
+
+# Agent skills (auto-generated)
+.agents/
+.claude/skills/
+skills-lock.json
