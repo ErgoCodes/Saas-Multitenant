@@ -2,12 +2,18 @@
   "name": "@task-manager/types",
   "version": "0.0.0",
   "private": true,
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
   "scripts": {
-    "clean": "rm -rf node_modules"
+    "build": "tsc",
+    "clean": "rm -rf dist node_modules"
   },
   "devDependencies": {
     "typescript": "^5.7.2"
