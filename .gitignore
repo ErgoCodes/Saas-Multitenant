@@ -1,0 +1,19 @@
+# Compound Engineering
+.compound-engineering/*.local.yaml
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+.turbo/
+.next/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.idea/
+*.swp
+*.swo
