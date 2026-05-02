@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '../../stores/auth';
 import { api } from '../../lib/api';
 
@@ -19,8 +20,8 @@ export default function RegisterPage() {
       const data = await api.post<{ accessToken: string; user: any }>('/auth/register', { name, email, password });
       login(data.user, data.accessToken);
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Registration failed');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed');
     }
   };
 
@@ -67,9 +68,9 @@ export default function RegisterPage() {
         </button>
         <p className="mt-4 text-center text-sm text-gray-600">
           Already have an account?{' '}
-          <a href="/login" className="text-blue-600 hover:underline">
+          <Link href="/login" className="text-blue-600 hover:underline">
             Login
-          </a>
+          </Link>
         </p>
       </form>
     </div>

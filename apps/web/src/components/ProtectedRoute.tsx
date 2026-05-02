@@ -14,5 +14,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     }
   }, [isAuthenticated, router]);
 
-  return isAuthenticated ? <>{children}</> : null;
+  if (!isAuthenticated) return null;
+
+  return <>{children}</>;
 }

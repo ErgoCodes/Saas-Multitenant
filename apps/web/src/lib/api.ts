@@ -11,9 +11,12 @@ async function fetcher<T>(path: string, options?: RequestInit): Promise<T> {
     },
   });
 
+  if (res.status === 204) return undefined as unknown as T;
+
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: res.statusText }));
-    throw new Error(error.message || `HTTP ${res.status}`);
+    const message = Array.isArray(error.message) ? error.message.join(', ') : error.message;
+    throw new Error(message || `HTTP ${res.status}`);
   }
 
   return res.json();
@@ -23,5 +26,6 @@ export const api = {
   get: <T>(path: string) => fetcher<T>(path, { method: 'GET' }),
   post: <T>(path: string, body: unknown) => fetcher<T>(path, { method: 'POST', body: JSON.stringify(body) }),
   put: <T>(path: string, body: unknown) => fetcher<T>(path, { method: 'PUT', body: JSON.stringify(body) }),
+  patch: <T>(path: string, body: unknown) => fetcher<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
   delete: <T>(path: string) => fetcher<T>(path, { method: 'DELETE' }),
 };

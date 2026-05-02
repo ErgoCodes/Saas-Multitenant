@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '../../stores/auth';
 import { api } from '../../lib/api';
 
@@ -18,8 +19,8 @@ export default function LoginPage() {
       const data = await api.post<{ accessToken: string; user: any }>('/auth/login', { email, password });
       login(data.user, data.accessToken);
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
     }
   };
 
@@ -56,9 +57,9 @@ export default function LoginPage() {
         </button>
         <p className="mt-4 text-center text-sm text-gray-600">
           No account?{' '}
-          <a href="/register" className="text-blue-600 hover:underline">
+          <Link href="/register" className="text-blue-600 hover:underline">
             Register
-          </a>
+          </Link>
         </p>
       </form>
     </div>
