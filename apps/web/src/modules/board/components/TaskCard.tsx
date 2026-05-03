@@ -8,10 +8,10 @@ interface TaskCardProps {
 }
 
 const priorityConfig: Record<Priority, { label: string; classes: string }> = {
-  [Priority.LOW]: { label: 'Low', classes: 'bg-success-100 text-success-700' },
-  [Priority.MEDIUM]: { label: 'Medium', classes: 'bg-accent-100 text-accent-700' },
-  [Priority.HIGH]: { label: 'High', classes: 'bg-accent-100 text-accent-700' },
-  [Priority.URGENT]: { label: 'Urgent', classes: 'bg-danger-100 text-danger-700' },
+  [Priority.LOW]: { label: 'Low', classes: 'bg-primary/10 text-primary' },
+  [Priority.MEDIUM]: { label: 'Medium', classes: 'bg-accent/10 text-accent-foreground' },
+  [Priority.HIGH]: { label: 'High', classes: 'bg-accent/10 text-accent-foreground' },
+  [Priority.URGENT]: { label: 'Urgent', classes: 'bg-destructive/10 text-destructive' },
 };
 
 const statusLabels: Record<TaskStatus, string> = {
@@ -26,18 +26,18 @@ function TaskCardInner({ task }: TaskCardProps) {
   return (
     <div className="rounded-xl bg-white  ">
       <div className="mb-2 flex items-start justify-between gap-2">
-        <h4 className="font-medium text-surface-900">{task.title}</h4>
+        <h4 className="font-medium text-foreground">{task.title}</h4>
         <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${p.classes}`}>
           {p.label}
         </span>
       </div>
       {task.description && (
-        <p className="mb-3 text-xs leading-relaxed text-surface-500 line-clamp-2">
+        <p className="mb-3 text-xs leading-relaxed text-muted-foreground line-clamp-2">
           {task.description}
         </p>
       )}
       <div className="flex items-center gap-2">
-        <span className="inline-flex items-center gap-1 rounded-md bg-surface-100 px-2 py-1 text-xs font-medium text-surface-500">
+        <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-xs font-medium text-muted-foreground">
           <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <circle cx="12" cy="12" r="10" />
           </svg>
@@ -76,8 +76,8 @@ export default function TaskCard({ task }: TaskCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className={`cursor-grab rounded-xl bg-white p-4 shadow-card transition-all duration-200 hover:shadow-elevated active:cursor-grabbing ${
-        isDragging ? 'z-50 ring-2 ring-brand-400 opacity-90 shadow-elevated' : ''
+      className={`cursor-grab rounded-xl bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md active:cursor-grabbing ${
+        isDragging ? 'z-50 ring-2 ring-ring opacity-90 shadow-md' : ''
       }`}
     >
       <TaskCardView task={task} />

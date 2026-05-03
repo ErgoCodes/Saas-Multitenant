@@ -22,7 +22,7 @@ export default function AuthGuard({ children }: { children: ReactNode }) {
 
   if (!mounted) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-surface-50">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <Spinner size="lg" />
       </div>
     );

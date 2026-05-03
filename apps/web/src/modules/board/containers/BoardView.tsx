@@ -158,11 +158,11 @@ export default function BoardView({ boardId }: BoardViewProps) {
       ) : board ? (
         <>
           <div className="mb-6">
-            <h1 className="font-heading text-xl font-bold tracking-tight text-surface-900">
+            <h1 className="font-heading text-xl font-bold tracking-tight text-foreground">
               {board.title}
             </h1>
             {board.description && (
-              <p className="mt-1 text-sm text-surface-500">{board.description}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{board.description}</p>
             )}
           </div>
 
@@ -193,15 +193,15 @@ export default function BoardView({ boardId }: BoardViewProps) {
         </>
       ) : (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-surface-200 text-surface-400">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted text-muted-foreground/70">
             <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 className="mt-4 font-heading text-lg font-semibold text-surface-900">
+          <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">
             Board not found
           </h3>
-          <p className="mt-1 text-sm text-surface-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             This board may have been deleted or you don&apos;t have access.
           </p>
         </div>

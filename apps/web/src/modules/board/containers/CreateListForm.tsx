@@ -28,7 +28,7 @@ export default function CreateListForm({ boardId }: { boardId: string }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex w-72 shrink-0 items-center gap-0 rounded-xl border-2 border-dashed border-surface-300 p-4 text-sm font-medium text-surface-400 transition-all hover:border-brand-400 hover:text-brand-600 justify-center"
+        className="flex w-72 shrink-0 items-center gap-0 rounded-xl border-2 border-dashed border-input p-4 text-sm font-medium text-muted-foreground/70 transition-all hover:border-primary hover:text-primary justify-center"
       >
           <svg className="h-4 w-4 " fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -41,7 +41,7 @@ export default function CreateListForm({ boardId }: { boardId: string }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-72 shrink-0 flex-col gap-3 rounded-xl bg-surface-100 p-4"
+      className="flex w-72 shrink-0 flex-col gap-3 rounded-xl bg-secondary p-4"
     >
       <Input
         value={title}

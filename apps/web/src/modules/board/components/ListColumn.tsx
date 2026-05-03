@@ -19,11 +19,11 @@ export default function ListColumn({ list, boardId }: ListColumnProps) {
   });
 
   return (
-    <div className="flex w-72 shrink-0 flex-col rounded-xl bg-surface-100 p-4">
+    <div className="flex w-72 shrink-0 flex-col rounded-xl bg-secondary p-4">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="font-heading font-semibold text-surface-800">{list.title}</h3>
-          <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-surface-300 px-1.5 text-xs font-medium text-surface-600">
+          <h3 className="font-heading font-semibold text-secondary-foreground">{list.title}</h3>
+          <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-muted/80 px-1.5 text-xs font-medium text-muted-foreground">
             {list.tasks?.length || 0}
           </span>
         </div>
@@ -32,7 +32,7 @@ export default function ListColumn({ list, boardId }: ListColumnProps) {
       <div
         ref={setNodeRef}
         className={`flex flex-1 flex-col gap-2 rounded-lg transition-colors min-h-[60px] ${
-          isOver ? 'bg-brand-50 ring-2 ring-brand-200' : ''
+          isOver ? 'bg-primary/10 ring-2 ring-ring/30' : ''
         }`}
       >
         <SortableContext
@@ -41,7 +41,7 @@ export default function ListColumn({ list, boardId }: ListColumnProps) {
         >
           {list.tasks?.length === 0 && (
             <div className="flex flex-1 items-center justify-center py-8">
-              <p className="text-xs text-surface-400">No tasks yet</p>
+              <p className="text-xs text-muted-foreground/70">No tasks yet</p>
             </div>
           )}
           {list.tasks?.map((task: Task) => (

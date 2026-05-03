@@ -26,21 +26,21 @@ export default function LoginForm({
         <div className="mx-auto w-full max-w-sm">
           <Link
             href="/"
-            className="mb-10 inline-flex items-center gap-1 font-heading text-xl font-bold tracking-tight text-surface-900"
+            className="mb-10 inline-flex items-center gap-1 font-heading text-xl font-bold tracking-tight text-foreground"
           >
-            <span className="text-brand-600">task</span>flow
+            <span className="text-primary">task</span>flow
           </Link>
 
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-surface-900">
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
             Welcome back
           </h1>
-          <p className="mt-1.5 text-sm text-surface-500">
+          <p className="mt-1.5 text-sm text-muted-foreground">
             Sign in to your account to continue.
           </p>
 
           <form onSubmit={onSubmit} className="mt-8 space-y-4">
             {error && (
-              <div className="rounded-lg border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-700">
+              <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                 {error}
               </div>
             )}
@@ -70,9 +70,9 @@ export default function LoginForm({
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-surface-500">
+          <p className="mt-6 text-center text-sm text-muted-foreground">
             No account?{' '}
-            <Link href="/register" className="font-medium text-brand-600 hover:text-brand-500">
+            <Link href="/register" className="font-medium text-primary hover:text-primary/90">
               Create one
             </Link>
           </p>
@@ -80,7 +80,7 @@ export default function LoginForm({
       </div>
 
       <div className="relative hidden flex-1 lg:block">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-900 via-brand-800 to-surface-900" />
+        <div className="absolute inset-0 bg-gradient-to-br from-foreground/90 via-foreground/80 to-foreground" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-accent-500/10 via-transparent to-transparent" />
         <div className="relative flex h-full items-center justify-center p-12">
           <div className="max-w-md text-center">

@@ -40,7 +40,7 @@ export default function CreateTaskForm({
     return (
       <button
         onClick={() => setOpen(true)}
-        className="mt-3 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-surface-400 transition-all hover:bg-white/50 hover:text-surface-600"
+        className="mt-3 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground/70 transition-all hover:bg-white/50 hover:text-muted-foreground"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

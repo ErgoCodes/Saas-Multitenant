@@ -10,7 +10,7 @@ export default function BoardPage({ params }: { params: Promise<{ id: string }> 
 
   return (
     <AuthGuard>
-      <div className="flex min-h-screen flex-col bg-surface-50">
+      <div className="flex min-h-screen flex-col bg-background">
         <AppHeader />
         <BoardView boardId={boardId} />
       </div>

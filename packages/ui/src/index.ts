@@ -8,10 +8,6 @@ export { Select, SelectGroup, SelectValue, SelectTrigger, SelectContent, SelectL
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './components/card';
 export { Badge } from './components/badge';
 export { Skeleton } from './components/skeleton';
-
-export { Button as ShadcnButton } from './components/ui/button';
-export { Badge as ShadcnBadge, badgeVariants } from './components/ui/badge';
-export { Skeleton as ShadcnSkeleton } from './components/ui/skeleton';
 export { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuRadioItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuGroup, DropdownMenuPortal, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuRadioGroup } from './components/ui/dropdown-menu';
 export { Sheet, SheetPortal, SheetOverlay, SheetTrigger, SheetClose, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription } from './components/ui/sheet';
 export { Toaster } from './components/ui/sonner';

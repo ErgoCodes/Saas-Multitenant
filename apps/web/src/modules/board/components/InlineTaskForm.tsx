@@ -25,7 +25,7 @@ export default function InlineTaskForm({
   onCancel,
 }: InlineTaskFormProps) {
   return (
-    <form onSubmit={onSubmit} className="mt-3 space-y-3 rounded-xl bg-white p-4 shadow-card">
+    <form onSubmit={onSubmit} className="mt-3 space-y-3 rounded-xl bg-white p-4 shadow-sm">
       <div className="space-y-1.5">
         <Label htmlFor="task-title">Title</Label>
         <Input
