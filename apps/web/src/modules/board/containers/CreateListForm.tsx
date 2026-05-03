@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Button, Input } from '@task-manager/ui';
 
-export default function CreateListModal({ boardId }: { boardId: string }) {
+export default function CreateListForm({ boardId }: { boardId: string }) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const queryClient = useQueryClient();

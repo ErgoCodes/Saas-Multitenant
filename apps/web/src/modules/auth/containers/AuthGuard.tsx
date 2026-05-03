@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth';
 import { Spinner } from '@task-manager/ui';
 
-export default function ProtectedRoute({ children }: { children: ReactNode }) {
+export default function AuthGuard({ children }: { children: ReactNode }) {
   const router = useRouter();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [mounted, setMounted] = useState(false);
