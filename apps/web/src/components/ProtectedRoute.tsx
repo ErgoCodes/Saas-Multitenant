@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '../stores/auth';
+import { Spinner } from '@task-manager/ui';
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+export default function ProtectedRoute({ children }: { children: ReactNode }) {
   const router = useRouter();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [mounted, setMounted] = useState(false);
@@ -20,7 +21,11 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   }, [mounted, isAuthenticated, router]);
 
   if (!mounted) {
-    return <div className="min-h-screen bg-gray-50" />;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface-50">
+        <Spinner size="lg" />
+      </div>
+    );
   }
 
   if (!isAuthenticated) return null;

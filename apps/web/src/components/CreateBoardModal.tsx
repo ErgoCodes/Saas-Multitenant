@@ -3,18 +3,19 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
+import { Modal, Button, Input, Textarea } from '@task-manager/ui';
 
 export default function CreateBoardModal() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: () => api.post('/boards', { title, description }),
+    mutationFn: (data: { title: string; description?: string }) => api.post('/boards', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['boards'] });
-      setIsOpen(false);
+      setOpen(false);
       setTitle('');
       setDescription('');
     },
@@ -22,60 +23,47 @@ export default function CreateBoardModal() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate();
+    mutation.mutate({ title, description: description || undefined });
   };
 
   return (
     <>
       <button
-        onClick={() => setIsOpen(true)}
-        className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-brand-700 hover:shadow-md active:scale-[0.97]"
       >
-        + New Board
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        New Board
       </button>
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-md rounded-lg bg-white p-6">
-            <h2 className="mb-4 text-xl font-bold">Create Board</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="mb-1 block text-sm font-medium">Title</label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="mb-1 block text-sm font-medium">Description</label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2"
-                  rows={3}
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="rounded-md bg-gray-100 px-4 py-2 text-gray-700 hover:bg-gray-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                >
-                  Create
-                </button>
-              </div>
-            </form>
+
+      <Modal open={open} onClose={() => setOpen(false)} title="Create Board">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. Product Launch"
+            required
+          />
+          <Textarea
+            label="Description (optional)"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="What's this board about?"
+            rows={3}
+          />
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" loading={mutation.isPending}>
+              Create Board
+            </Button>
           </div>
-        </div>
-      )}
+        </form>
+      </Modal>
     </>
   );
 }
