@@ -3,8 +3,11 @@ import { Providers } from './providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Task Manager',
-  description: 'Collaborative task management',
+  title: {
+    default: 'Task Manager',
+    template: '%s | Task Manager',
+  },
+  description: 'Collaborative task management made simple. Organize projects, track progress, and ship faster with your team.',
 };
 
 export default function RootLayout({
@@ -14,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className="min-h-screen bg-surface-50 font-body text-surface-700 antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>

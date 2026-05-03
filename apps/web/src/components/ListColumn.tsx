@@ -1,30 +1,55 @@
 'use client';
 
-import { List, Task } from '@task-manager/types';
+import { useDroppable } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { Task } from '@task-manager/types';
+import type { List } from '@task-manager/types';
 import TaskCard from './TaskCard';
 import CreateTaskModal from './CreateTaskModal';
 
 interface ListColumnProps {
   list: List & { tasks: Task[] };
   boardId: string;
-  onTaskMove: (taskId: string, listId: string, order: number) => void;
-  onListReorder: (listId: string, order: number) => void;
 }
 
-export default function ListColumn({ list, boardId, onTaskMove }: ListColumnProps) {
+export default function ListColumn({ list, boardId }: ListColumnProps) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: list.id,
+    data: { type: 'list', list },
+  });
+
   return (
-    <div className="flex w-72 shrink-0 flex-col rounded-lg bg-gray-100 p-3">
+    <div className="flex w-72 shrink-0 flex-col rounded-xl bg-surface-100 p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-semibold text-gray-800">{list.title}</h3>
-        <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-600">
-          {list.tasks?.length || 0}
-        </span>
+        <div className="flex items-center gap-2">
+          <h3 className="font-heading font-semibold text-surface-800">{list.title}</h3>
+          <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-surface-300 px-1.5 text-xs font-medium text-surface-600">
+            {list.tasks?.length || 0}
+          </span>
+        </div>
       </div>
-      <div className="flex flex-1 flex-col gap-2">
-        {list.tasks?.map((task) => (
-          <TaskCard key={task.id} task={task} onMove={(listId, order) => onTaskMove(task.id, listId, order)} />
-        ))}
+
+      <div
+        ref={setNodeRef}
+        className={`flex flex-1 flex-col gap-2 rounded-lg transition-colors min-h-[60px] ${
+          isOver ? 'bg-brand-50 ring-2 ring-brand-200' : ''
+        }`}
+      >
+        <SortableContext
+          items={list.tasks?.map((t: Task) => t.id) || []}
+          strategy={verticalListSortingStrategy}
+        >
+          {list.tasks?.length === 0 && (
+            <div className="flex flex-1 items-center justify-center py-8">
+              <p className="text-xs text-surface-400">No tasks yet</p>
+            </div>
+          )}
+          {list.tasks?.map((task: Task) => (
+            <TaskCard key={task.id} task={task} />
+          ))}
+        </SortableContext>
       </div>
+
       <CreateTaskModal listId={list.id} boardId={boardId} />
     </div>
   );
