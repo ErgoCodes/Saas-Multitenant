@@ -4,8 +4,8 @@ import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Task } from '@task-manager/types';
 import type { List } from '@task-manager/types';
-import TaskCard from './TaskCard';
-import CreateTaskModal from './CreateTaskModal';
+import TaskCard from '@/components/TaskCard';
+import CreateTaskModal from '@/components/CreateTaskModal';
 
 interface ListColumnProps {
   list: List & { tasks: Task[] };

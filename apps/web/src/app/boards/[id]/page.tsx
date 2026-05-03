@@ -15,14 +15,14 @@ import {
   type DragOverEvent,
 } from '@dnd-kit/core';
 import { SortableContext, arrayMove } from '@dnd-kit/sortable';
-import { useAuthStore } from '../../../stores/auth';
-import { api } from '../../../lib/api';
+import { useAuthStore } from '@/stores/auth';
+import { api } from '@/lib/api';
 import { Board, List, Task } from '@task-manager/types';
-import Header from '../../../components/Header';
-import ListColumn from '../../../components/ListColumn';
-import CreateListModal from '../../../components/CreateListModal';
-import TaskCard, { TaskCardView } from '../../../components/TaskCard';
-import ProtectedRoute from '../../../components/ProtectedRoute';
+import Header from '@/components/Header';
+import ListColumn from '@/components/ListColumn';
+import CreateListModal from '@/components/CreateListModal';
+import TaskCard, { TaskCardView } from '@/components/TaskCard';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { Spinner, Skeleton } from '@task-manager/ui';
 
 export default function BoardPage({ params }: { params: Promise<{ id: string }> }) {

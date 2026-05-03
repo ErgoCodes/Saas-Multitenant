@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../lib/api';
+import { api } from '@/lib/api';
 import { Priority } from '@task-manager/types';
 import { Button, Input, Textarea, Select } from '@task-manager/ui';
 

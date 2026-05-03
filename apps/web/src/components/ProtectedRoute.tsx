@@ -2,7 +2,7 @@
 
 import { useState, useEffect, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '../stores/auth';
+import { useAuthStore } from '@/stores/auth';
 import { Spinner } from '@task-manager/ui';
 
 export default function ProtectedRoute({ children }: { children: ReactNode }) {

@@ -10,7 +10,7 @@ interface TaskCardProps {
 const priorityConfig: Record<Priority, { label: string; classes: string }> = {
   [Priority.LOW]: { label: 'Low', classes: 'bg-success-100 text-success-700' },
   [Priority.MEDIUM]: { label: 'Medium', classes: 'bg-accent-100 text-accent-700' },
-  [Priority.HIGH]: { label: 'High', classes: 'bg-orange-100 text-orange-700' },
+  [Priority.HIGH]: { label: 'High', classes: 'bg-accent-100 text-accent-700' },
   [Priority.URGENT]: { label: 'Urgent', classes: 'bg-danger-100 text-danger-700' },
 };
 
@@ -24,7 +24,7 @@ function TaskCardInner({ task }: TaskCardProps) {
   const p = priorityConfig[task.priority];
 
   return (
-    <div className="rounded-xl bg-white p-4 shadow-card">
+    <div className="rounded-xl bg-white  ">
       <div className="mb-2 flex items-start justify-between gap-2">
         <h4 className="font-medium text-surface-900">{task.title}</h4>
         <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${p.classes}`}>

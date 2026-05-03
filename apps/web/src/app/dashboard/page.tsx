@@ -1,13 +1,13 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuthStore } from '../../stores/auth';
-import { api } from '../../lib/api';
+import { useAuthStore } from '@/stores/auth';
+import { api } from '@/lib/api';
 import { Board } from '@task-manager/types';
-import Header from '../../components/Header';
-import BoardCard from '../../components/BoardCard';
-import CreateBoardModal from '../../components/CreateBoardModal';
-import ProtectedRoute from '../../components/ProtectedRoute';
+import Header from '@/components/Header';
+import BoardCard from '@/components/BoardCard';
+import CreateBoardModal from '@/components/CreateBoardModal';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { Spinner, Skeleton } from '@task-manager/ui';
 
 export default function DashboardPage() {

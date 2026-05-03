@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAuthStore } from '../../stores/auth';
-import { api } from '../../lib/api';
+import { useAuthStore } from '@/stores/auth';
+import { api } from '@/lib/api';
 import { Button } from '@task-manager/ui';
 import { Input } from '@task-manager/ui';
 

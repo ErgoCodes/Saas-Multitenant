@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuthStore } from '../stores/auth';
+import { useAuthStore } from '@/stores/auth';
 import Link from 'next/link';
 
 export default function Header() {
