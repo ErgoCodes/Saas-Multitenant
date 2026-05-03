@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Providers } from '@/app/providers';
+import { Toaster } from '@task-manager/ui';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-surface-50 font-body text-surface-700 antialiased">
         <Providers>{children}</Providers>
+        <Toaster />
       </body>
     </html>
   );
