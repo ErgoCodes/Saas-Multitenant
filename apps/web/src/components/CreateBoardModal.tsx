@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import { Modal, Button, Input, Textarea, Label } from '@task-manager/ui';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button, Input, Textarea, Label } from '@task-manager/ui';
 
 export default function CreateBoardModal() {
   const [open, setOpen] = useState(false);
@@ -38,34 +38,27 @@ export default function CreateBoardModal() {
         New Board
       </button>
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Create Board">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Label htmlFor="title" className="mb-1.5 block">Title</Label>
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. Product Launch"
-            required
-          />
-          <Label htmlFor="description-optional" className="mb-1.5 block">Description (optional)</Label>
-          <Textarea
-            id="description-optional"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="What's this board about?"
-            rows={3}
-          />
-          <div className="flex items-center justify-end gap-3 pt-2">
-            <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" loading={mutation.isPending}>
-              Create Board
-            </Button>
-          </div>
-        </form>
-      </Modal>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Board</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="board-title">Title</Label>
+              <Input id="board-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Product Launch" required />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="board-desc">Description (optional)</Label>
+              <Textarea id="board-desc" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What's this board about?" rows={3} />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
+              <Button type="submit" loading={mutation.isPending}>Create Board</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

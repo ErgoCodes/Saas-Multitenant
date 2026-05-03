@@ -3,19 +3,15 @@ export { Input } from './components/input';
 export { Textarea } from './components/textarea';
 export { Label } from './components/label';
 export { Spinner } from './components/spinner';
-export { Select } from './components/Select';
-export { Modal } from './components/Modal';
+export { Dialog, DialogPortal, DialogOverlay, DialogClose, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from './components/dialog';
+export { Select, SelectGroup, SelectValue, SelectTrigger, SelectContent, SelectLabel, SelectItem, SelectSeparator, SelectScrollUpButton, SelectScrollDownButton } from './components/select';
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './components/card';
 export { Badge } from './components/badge';
 export { Skeleton } from './components/skeleton';
 
 export { Button as ShadcnButton } from './components/ui/button';
-export { Input as ShadcnInput } from './components/ui/input';
-export { Textarea as ShadcnTextarea } from './components/ui/textarea';
-export { Label as ShadcnLabel } from './components/ui/label';
-export { Select as ShadcnSelect, SelectGroup, SelectValue, SelectTrigger, SelectContent, SelectLabel, SelectItem, SelectSeparator, SelectScrollUpButton, SelectScrollDownButton } from './components/ui/select';
-export { Dialog, DialogPortal, DialogOverlay, DialogClose, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from './components/ui/dialog';
-
+export { Badge as ShadcnBadge, badgeVariants } from './components/ui/badge';
+export { Skeleton as ShadcnSkeleton } from './components/ui/skeleton';
 export { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuRadioItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuGroup, DropdownMenuPortal, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuRadioGroup } from './components/ui/dropdown-menu';
 export { Sheet, SheetPortal, SheetOverlay, SheetTrigger, SheetClose, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription } from './components/ui/sheet';
 export { Toaster } from './components/ui/sonner';
