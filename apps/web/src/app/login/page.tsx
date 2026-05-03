@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/stores/auth';
 import { api } from '@/lib/api';
-import { Button } from '@task-manager/ui';
-import { Input } from '@task-manager/ui';
+import { Button, Input, Label } from '@task-manager/ui';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -59,8 +58,9 @@ export default function LoginPage() {
               </div>
             )}
 
+            <Label htmlFor="email" className="mb-1.5 block">Email</Label>
             <Input
-              label="Email"
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -68,8 +68,9 @@ export default function LoginPage() {
               required
             />
 
+            <Label htmlFor="password" className="mb-1.5 block">Password</Label>
             <Input
-              label="Password"
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

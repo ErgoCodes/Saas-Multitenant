@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import { Modal, Button, Input, Textarea } from '@task-manager/ui';
+import { Modal, Button, Input, Textarea, Label } from '@task-manager/ui';
 
 export default function CreateBoardModal() {
   const [open, setOpen] = useState(false);
@@ -40,15 +40,17 @@ export default function CreateBoardModal() {
 
       <Modal open={open} onClose={() => setOpen(false)} title="Create Board">
         <form onSubmit={handleSubmit} className="space-y-4">
+          <Label htmlFor="title" className="mb-1.5 block">Title</Label>
           <Input
-            label="Title"
+            id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Product Launch"
             required
           />
+          <Label htmlFor="description-optional" className="mb-1.5 block">Description (optional)</Label>
           <Textarea
-            label="Description (optional)"
+            id="description-optional"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="What's this board about?"
