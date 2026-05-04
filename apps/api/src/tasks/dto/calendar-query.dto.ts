@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsISO8601,
   IsOptional,
@@ -47,6 +48,11 @@ export class CalendarQueryDto {
   @IsOptional()
   status?: TaskStatus;
 
+  @Transform(({ value }) => {
+    if (value === 'true' || value === true || value === '1') return true;
+    if (value === 'false' || value === false || value === '0') return false;
+    return value;
+  })
   @IsBoolean()
   @IsOptional()
   includeUnscheduled?: boolean;
