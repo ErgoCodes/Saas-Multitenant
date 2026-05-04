@@ -5,8 +5,10 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.use((_req, res, next) => {
-    res.setHeader('Access-Control-Allow-Private-Network', 'true');
+  app.use((req, res, next) => {
+    if (req.method === 'OPTIONS' && req.headers['access-control-request-private-network'] === 'true') {
+      res.setHeader('Access-Control-Allow-Private-Network', 'true');
+    }
     next();
   });
 
