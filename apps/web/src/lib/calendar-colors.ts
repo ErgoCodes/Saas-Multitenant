@@ -1,0 +1,28 @@
+const BOARD_COLORS = [
+  { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30' },
+  { bg: 'bg-emerald-500/20', text: 'text-emerald-400', border: 'border-emerald-500/30' },
+  { bg: 'bg-amber-500/20', text: 'text-amber-400', border: 'border-amber-500/30' },
+  { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/30' },
+  { bg: 'bg-purple-500/20', text: 'text-purple-400', border: 'border-purple-500/30' },
+  { bg: 'bg-pink-500/20', text: 'text-pink-400', border: 'border-pink-500/30' },
+  { bg: 'bg-cyan-500/20', text: 'text-cyan-400', border: 'border-cyan-500/30' },
+  { bg: 'bg-orange-500/20', text: 'text-orange-400', border: 'border-orange-500/30' },
+];
+
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash + char) | 0;
+  }
+  return Math.abs(hash);
+}
+
+export function getBoardColor(boardId: string) {
+  return BOARD_COLORS[hashString(boardId) % BOARD_COLORS.length];
+}
+
+export function getBoardColorStyle(boardId: string) {
+  const color = getBoardColor(boardId);
+  return `${color.bg} ${color.text} ${color.border}`;
+}

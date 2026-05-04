@@ -50,3 +50,32 @@
     @apply bg-primary/20 text-foreground;
   }
 }
+
+@layer base {
+  .fc {
+    --fc-border-color: hsl(var(--border));
+    --fc-page-bg-color: hsl(var(--background));
+    --fc-neutral-bg-color: hsl(var(--muted) / 0.3);
+    --fc-neutral-text-color: hsl(var(--muted-foreground));
+    --fc-button-bg-color: hsl(var(--primary));
+    --fc-button-border-color: hsl(var(--primary));
+    --fc-button-text-color: hsl(var(--primary-foreground));
+    --fc-button-hover-bg-color: hsl(var(--primary) / 0.9);
+    --fc-button-hover-border-color: hsl(var(--primary) / 0.9);
+    --fc-button-active-bg-color: hsl(var(--primary) / 0.8);
+    --fc-button-active-border-color: hsl(var(--primary) / 0.8);
+    --fc-event-bg-color: hsl(var(--primary));
+    --fc-event-border-color: hsl(var(--primary));
+    --fc-event-text-color: hsl(var(--primary-foreground));
+    --fc-today-bg-color: hsl(var(--accent) / 0.15);
+    --fc-now-indicator-color: hsl(var(--destructive));
+  }
+
+  .fc .fc-button {
+    @apply rounded-md text-sm font-medium transition-colors;
+  }
+
+  .fc .fc-button:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2;
+  }
+}

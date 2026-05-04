@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Request, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, Request, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { CalendarQueryDto } from './dto/calendar-query.dto';
 
 @Controller('tasks')
 @UseGuards(JwtAuthGuard)
@@ -13,6 +15,12 @@ export class TasksController {
   @HttpCode(HttpStatus.CREATED)
   create(@Body() dto: CreateTaskDto, @Request() req) {
     return this.tasksService.create(req.user.id, dto);
+  }
+
+  @Get('calendar')
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
+  findByDateRange(@Query() query: CalendarQueryDto, @Request() req) {
+    return this.tasksService.findByDateRange(req.user.id, query);
   }
 
   @Get(':id')

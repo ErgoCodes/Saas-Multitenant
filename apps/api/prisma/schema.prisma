@@ -47,6 +47,7 @@ model Task {
   priority    Priority   @default(MEDIUM)
   status      TaskStatus @default(TODO)
   order       Int        @default(0)
+  dueDate     DateTime?  @db.Date
   listId      String
   list        List       @relation(fields: [listId], references: [id], onDelete: Cascade)
   assigneeId  String?

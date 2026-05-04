@@ -21,6 +21,20 @@ export default function Header({ user, onLogout }: HeaderProps) {
         >
           <span className="text-primary">task</span>flow
         </Link>
+        <nav className="flex items-center gap-4">
+          <Link
+            href="/dashboard"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Boards
+          </Link>
+          <Link
+            href="/calendar"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Calendar
+          </Link>
+        </nav>
         {user && (
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">{user.name}</span>

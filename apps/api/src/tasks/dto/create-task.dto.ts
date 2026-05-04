@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsNotEmpty, IsISO8601, MaxLength } from 'class-validator';
 import { Priority } from '@task-manager/types';
 
 export class CreateTaskDto {
@@ -19,4 +19,8 @@ export class CreateTaskDto {
   @IsString()
   @IsNotEmpty()
   listId: string;
+
+  @IsISO8601({ strict: true })
+  @IsOptional()
+  dueDate?: string;
 }

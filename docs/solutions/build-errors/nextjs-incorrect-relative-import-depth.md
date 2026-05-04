@@ -74,3 +74,4 @@ The App Router's nested directory structure (`app/boards/[id]/`) means files are
 ## Related Issues
 
 - Also fixed hydration mismatch in `ProtectedRoute` component in the same session (see `docs/solutions/runtime-errors/`)
+- Components referenced here (Header, ListColumn, ProtectedRoute, etc.) were later redesigned with a design system and drag-and-drop support (see `docs/solutions/design-patterns/ui-design-system-redesign-2026-05-03.md`)

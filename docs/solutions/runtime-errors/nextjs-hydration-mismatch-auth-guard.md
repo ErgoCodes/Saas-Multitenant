@@ -88,3 +88,4 @@ React hydration requires the server-rendered HTML tree to match the initial clie
 ## Related Issues
 
 - Also fixed broken relative imports in `apps/web/src/app/boards/[id]/page.tsx` in the same session (see `docs/solutions/build-errors/`)
+- ProtectedRoute was later redesigned: the placeholder `<div>` was replaced with a loading `<Spinner>` as part of the UI design system overhaul (see `docs/solutions/design-patterns/ui-design-system-redesign-2026-05-03.md`)

@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum, IsNumber, MaxLength } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsISO8601, IsNumber, MaxLength } from 'class-validator';
 import { Priority, TaskStatus } from '@task-manager/types';
 
 export class UpdateTaskDto {
@@ -27,4 +27,8 @@ export class UpdateTaskDto {
   @IsString()
   @IsOptional()
   listId?: string;
+
+  @IsISO8601({ strict: true })
+  @IsOptional()
+  dueDate?: string;
 }

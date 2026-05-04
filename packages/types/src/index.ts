@@ -63,6 +63,7 @@ export interface Task {
   order: number;
   listId: string;
   assigneeId: string | null;
+  dueDate: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -92,6 +93,7 @@ export interface CreateTaskDto {
   description?: string;
   priority?: Priority;
   listId: string;
+  dueDate?: string;
 }
 
 export interface UpdateTaskDto {
@@ -101,6 +103,7 @@ export interface UpdateTaskDto {
   status?: TaskStatus;
   order?: number;
   listId?: string;
+  dueDate?: string;
 }
 
 export interface RegisterDto {

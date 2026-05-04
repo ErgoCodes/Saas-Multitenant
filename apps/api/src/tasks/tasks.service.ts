@@ -4,6 +4,7 @@ import { WebsocketGateway } from '../websocket/websocket.gateway';
 import { BoardAccessService } from '../common/board-access.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { CalendarQueryDto } from './dto/calendar-query.dto';
 import { WsEvent } from '@task-manager/types';
 
 @Injectable()
@@ -23,6 +24,7 @@ export class TasksService {
         description: dto.description,
         priority: dto.priority,
         listId: dto.listId,
+        dueDate: dto.dueDate ? new Date(dto.dueDate) : null,
       },
     });
     this.wsGateway.emitToBoard(boardId, WsEvent.TASK_CREATED, task);
@@ -88,5 +90,55 @@ export class TasksService {
     await this.prisma.task.delete({ where: { id } });
     this.wsGateway.emitToBoard(task.list.boardId, WsEvent.TASK_DELETED, { id });
     return { id };
+  }
+
+  async findByDateRange(userId: string, query: CalendarQueryDto) {
+    const start = new Date(query.startDate);
+    const end = new Date(query.endDate);
+
+    const where: Record<string, unknown> = {
+      list: {
+        board: {
+          ownerId: userId,
+        },
+      },
+    };
+
+    if (!query.includeUnscheduled) {
+      where.dueDate = { gte: start, lte: end };
+    } else {
+      where.OR = [
+        { dueDate: { gte: start, lte: end } },
+        { dueDate: null },
+      ];
+    }
+
+    if (query.boardId) {
+      (where.list as Record<string, unknown>).board = {
+        ...((where.list as Record<string, unknown>).board as Record<string, unknown>),
+        id: query.boardId,
+      };
+    }
+    if (query.priority) {
+      where.priority = query.priority;
+    }
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    return this.prisma.task.findMany({
+      where,
+      include: {
+        list: {
+          select: {
+            id: true,
+            title: true,
+            boardId: true,
+            board: { select: { id: true, title: true } },
+          },
+        },
+      },
+      orderBy: { dueDate: 'asc' },
+    });
   }
 }
