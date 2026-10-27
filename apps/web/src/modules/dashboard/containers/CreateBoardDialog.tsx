@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useOrganizationStore } from '@/stores/organization';
 import {
@@ -47,11 +48,9 @@ export default function CreateBoardDialog() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md active:scale-[0.97]"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/20 transition-[background-color,transform,box-shadow] duration-150 ease-out hover:bg-primary/90 hover:shadow-md hover:shadow-primary/30 active:scale-[0.97]"
       >
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        </svg>
+        <Plus className="h-4 w-4" />
         New Board
       </button>
 

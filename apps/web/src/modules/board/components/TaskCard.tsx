@@ -67,7 +67,7 @@ function TaskCardInner({ task, onStatusChange }: TaskCardProps) {
             e.stopPropagation();
             onStatusChange?.(task, s.next);
           }}
-          className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors ${s.classes}`}
+          className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-[background-color,color,transform] duration-150 ease-out active:scale-95 ${s.classes}`}
         >
           <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             {task.status === TaskStatus.DONE ? (
@@ -135,7 +135,7 @@ export default function TaskCard({ task, onSelect, onStatusChange }: TaskCardPro
       {...attributes}
       {...listeners}
       onClick={() => onSelect?.(task)}
-      className={`cursor-grab rounded-xl bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md active:cursor-grabbing ${
+      className={`cursor-grab rounded-xl bg-white p-4 shadow-sm transition-shadow duration-150 ease-out hover:shadow-md active:cursor-grabbing ${
         isDragging ? 'z-50 ring-2 ring-ring opacity-90 shadow-md' : ''
       }`}
     >

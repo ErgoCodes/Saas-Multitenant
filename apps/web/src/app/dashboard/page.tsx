@@ -5,8 +5,10 @@ import BoardGrid from '@/modules/dashboard/containers/BoardGrid';
 export default function DashboardPage() {
   return (
     <AuthGuard>
-      <AppHeader />
-      <BoardGrid />
+      <div className="flex min-h-screen flex-col bg-slate-50/60">
+        <AppHeader />
+        <BoardGrid />
+      </div>
     </AuthGuard>
   );
 }

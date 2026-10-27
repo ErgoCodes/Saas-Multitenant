@@ -50,6 +50,10 @@ const config: Config = {
       boxShadow: {
         soft: '0 1px 3px 0 rgb(0 0 0 / 0.03), 0 1px 2px -1px rgb(0 0 0 / 0.05)',
       },
+      transitionTimingFunction: {
+        drawer: 'cubic-bezier(0.32, 0.72, 0, 1)',
+        'out-fast': 'cubic-bezier(0.23, 1, 0.32, 1)',
+      },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',
         'slide-up': 'slideUp 0.5s ease-out',
