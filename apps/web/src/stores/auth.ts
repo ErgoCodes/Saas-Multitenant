@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { User } from '@task-manager/types';
+import { useOrganizationStore } from './organization';
 
 interface AuthState {
   user: User | null;
@@ -31,6 +32,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    useOrganizationStore.getState().clearOrganization();
     set({ user: null, token: null, isAuthenticated: false });
   },
 }));
