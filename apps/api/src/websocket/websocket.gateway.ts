@@ -8,7 +8,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { WsEvent } from '@task-manager/types';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma/prisma.service';
+import { BoardAccessService } from '../common/board-access.service';
 
 @WebSocketGateway({
   cors: {
@@ -22,7 +22,7 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
 
   constructor(
     private jwtService: JwtService,
-    private prisma: PrismaService,
+    private boardAccess: BoardAccessService,
   ) {}
 
   async handleConnection(client: Socket) {
@@ -49,15 +49,28 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
     const userId = (client as any).userId;
     if (!userId) return;
 
-    const board = await this.prisma.board.findUnique({ where: { id: boardId } });
-    if (board && board.ownerId === userId) {
-      client.join(boardId);
+    try {
+      await this.boardAccess.assertBoardAccess(userId, boardId);
+    } catch {
+      return;
     }
+    client.join(boardId);
   }
 
   @SubscribeMessage(WsEvent.LEAVE_BOARD)
   handleLeaveBoard(client: Socket, boardId: string) {
     client.leave(boardId);
+  }
+
+  evictUserFromRooms(userId: string, roomIds: string[]) {
+    if (!this.server?.sockets?.sockets || roomIds.length === 0) return;
+    for (const socket of this.server.sockets.sockets.values()) {
+      if ((socket as any).userId === userId) {
+        for (const roomId of roomIds) {
+          socket.leave(roomId);
+        }
+      }
+    }
   }
 
   emitToBoard(boardId: string, event: string, payload: unknown) {

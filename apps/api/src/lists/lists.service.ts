@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { WebsocketGateway } from '../websocket/websocket.gateway';
 import { BoardAccessService } from '../common/board-access.service';
@@ -15,11 +15,19 @@ export class ListsService {
   ) {}
 
   async create(userId: string, dto: CreateListDto) {
-    await this.boardAccess.assertOwnership(userId, dto.boardId);
+    await this.boardAccess.assertBoardAccess(userId, dto.boardId);
+    const lastList = await this.prisma.list.findFirst({
+      where: { boardId: dto.boardId },
+      orderBy: { order: 'desc' },
+      select: { order: true },
+    });
+    const nextOrder = lastList ? lastList.order + 1 : 0;
+
     const list = await this.prisma.list.create({
       data: {
         title: dto.title,
         boardId: dto.boardId,
+        order: nextOrder,
       },
       include: { tasks: true },
     });
@@ -28,11 +36,11 @@ export class ListsService {
   }
 
   async findByBoard(userId: string, boardId: string) {
-    await this.boardAccess.assertOwnership(userId, boardId);
+    await this.boardAccess.assertBoardAccess(userId, boardId);
     return this.prisma.list.findMany({
       where: { boardId },
-      orderBy: { order: 'asc' },
-      include: { tasks: { orderBy: { order: 'asc' } } },
+      orderBy: [{ order: 'asc' }, { createdAt: 'asc' }],
+      include: { tasks: { orderBy: [{ order: 'asc' }, { createdAt: 'asc' }] } },
     });
   }
 
@@ -41,8 +49,8 @@ export class ListsService {
       where: { id },
       select: { boardId: true },
     });
-    if (!list) throw new Error('List not found');
-    await this.boardAccess.assertOwnership(userId, list.boardId);
+    if (!list) throw new NotFoundException('List not found');
+    await this.boardAccess.assertBoardAccess(userId, list.boardId);
     const updated = await this.prisma.list.update({
       where: { id },
       data: dto,
@@ -57,8 +65,8 @@ export class ListsService {
       where: { id },
       select: { boardId: true },
     });
-    if (!list) throw new Error('List not found');
-    await this.boardAccess.assertOwnership(userId, list.boardId);
+    if (!list) throw new NotFoundException('List not found');
+    await this.boardAccess.assertBoardAccess(userId, list.boardId);
     await this.prisma.$transaction(async (tx) => {
       await tx.task.deleteMany({ where: { listId: id } });
       await tx.list.delete({ where: { id } });

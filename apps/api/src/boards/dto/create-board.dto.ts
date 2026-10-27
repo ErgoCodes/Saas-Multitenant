@@ -10,4 +10,8 @@ export class CreateBoardDto {
   @IsOptional()
   @MaxLength(1000)
   description?: string;
+
+  @IsString()
+  @IsOptional()
+  organizationId?: string;
 }

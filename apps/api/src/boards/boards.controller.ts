@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Request, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  Request,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -16,8 +29,8 @@ export class BoardsController {
   }
 
   @Get()
-  findAll(@Request() req) {
-    return this.boardsService.findAll(req.user.id);
+  findAll(@Query('organizationId') organizationId: string | undefined, @Request() req) {
+    return this.boardsService.findAll(req.user.id, organizationId);
   }
 
   @Get(':id')

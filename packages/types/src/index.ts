@@ -11,6 +11,12 @@ export enum TaskStatus {
   DONE = 'DONE',
 }
 
+export enum OrgRole {
+  OWNER = 'OWNER',
+  ADMIN = 'ADMIN',
+  MEMBER = 'MEMBER',
+}
+
 export enum WsEvent {
   BOARD_CREATED = 'board:created',
   BOARD_UPDATED = 'board:updated',
@@ -34,11 +40,31 @@ export interface User {
   updatedAt: Date;
 }
 
+export interface Organization {
+  id: string;
+  name: string;
+  slug: string;
+  role?: OrgRole;
+  memberCount?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrganizationMember {
+  id: string;
+  organizationId: string;
+  userId: string;
+  role: OrgRole;
+  createdAt: Date;
+  user: Pick<User, 'id' | 'email' | 'name'>;
+}
+
 export interface Board {
   id: string;
   title: string;
   description: string | null;
   ownerId: string;
+  organizationId: string;
   createdAt: Date;
   updatedAt: Date;
   lists?: List[];
@@ -63,14 +89,29 @@ export interface Task {
   order: number;
   listId: string;
   assigneeId: string | null;
+  assignee?: Pick<User, 'id' | 'name' | 'email'> | null;
   dueDate: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
 
+export interface CreateOrganizationDto {
+  name: string;
+}
+
+export interface AddOrganizationMemberDto {
+  email: string;
+  role?: OrgRole;
+}
+
+export interface UpdateOrganizationMemberDto {
+  role: OrgRole;
+}
+
 export interface CreateBoardDto {
   title: string;
   description?: string;
+  organizationId?: string;
 }
 
 export interface UpdateBoardDto {
@@ -92,8 +133,10 @@ export interface CreateTaskDto {
   title: string;
   description?: string;
   priority?: Priority;
+  status?: TaskStatus;
   listId: string;
   dueDate?: string;
+  assigneeId?: string;
 }
 
 export interface UpdateTaskDto {
@@ -103,7 +146,8 @@ export interface UpdateTaskDto {
   status?: TaskStatus;
   order?: number;
   listId?: string;
-  dueDate?: string;
+  dueDate?: string | null;
+  assigneeId?: string | null;
 }
 
 export interface RegisterDto {
