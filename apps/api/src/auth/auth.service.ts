@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import { RegisterDto } from './dto/register.dto';
+import { generateSlug } from '../common/slug';
 
 @Injectable()
 export class AuthService {
@@ -12,19 +13,48 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    const normalizedEmail = dto.email.trim().toLowerCase();
+    const existing = await this.prisma.user.findFirst({
+      where: { email: { equals: normalizedEmail, mode: 'insensitive' } },
+    });
     if (existing) {
       throw new ConflictException('Email already in use');
     }
     const hashed = await bcrypt.hash(dto.password, 10);
-    const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        password: hashed,
-        name: dto.name,
-      },
-      select: { id: true, email: true, name: true, createdAt: true, updatedAt: true },
-    });
+    const user = await this.prisma
+      .$transaction(async (tx) => {
+        const createdUser = await tx.user.create({
+          data: {
+            email: normalizedEmail,
+            password: hashed,
+            name: dto.name,
+          },
+          select: { id: true, email: true, name: true, createdAt: true, updatedAt: true },
+        });
+
+        await tx.organization.create({
+          data: {
+            name: `${dto.name}'s Workspace`,
+            slug: generateSlug(dto.name),
+            members: {
+              create: {
+                userId: createdUser.id,
+                role: 'OWNER',
+              },
+            },
+          },
+        });
+
+        return createdUser;
+      })
+      .catch((err) => {
+        // A concurrent register for the same email can pass the check above.
+        if (err?.code === 'P2002') {
+          throw new ConflictException('Email already in use');
+        }
+        throw err;
+      });
+
     const token = this.jwtService.sign({ sub: user.id, email: user.email });
     return { accessToken: token, user };
   }
@@ -51,7 +81,13 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const normalizedEmail = email.trim().toLowerCase();
+    // Prefer the exact normalized row; legacy mixed-case duplicates fall back to a case-insensitive match.
+    const user =
+      (await this.prisma.user.findUnique({ where: { email: normalizedEmail } })) ??
+      (await this.prisma.user.findFirst({
+        where: { email: { equals: normalizedEmail, mode: 'insensitive' } },
+      }));
     if (!user) return null;
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return null;

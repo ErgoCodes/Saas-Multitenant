@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { WebsocketGateway } from './websocket.gateway';
 import { PrismaModule } from '../prisma/prisma.module';
+import { BoardAccessService } from '../common/board-access.service';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { PrismaModule } from '../prisma/prisma.module';
       inject: [ConfigService],
     }),
   ],
-  providers: [WebsocketGateway],
+  providers: [WebsocketGateway, BoardAccessService],
   exports: [WebsocketGateway],
 })
 export class WebsocketModule {}
