@@ -1,7 +1,9 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth';
+import { useActiveOrganization } from '@/modules/organization/hooks/useActiveOrganization';
 import { api } from '@/lib/api';
 import { Board } from '@task-manager/types';
 import { Skeleton } from '@task-manager/ui';
@@ -11,6 +13,7 @@ import DashboardHeader from '@/modules/dashboard/components/DashboardHeader';
 
 export default function BoardGrid() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const { activeOrganizationId, isReady } = useActiveOrganization();
   const queryClient = useQueryClient();
 
   const {
@@ -18,14 +21,23 @@ export default function BoardGrid() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['boards'],
-    queryFn: () => api.get<Board[]>('/boards'),
-    enabled: isAuthenticated,
+    queryKey: ['boards', activeOrganizationId],
+    queryFn: () => {
+      const query = activeOrganizationId ? `?organizationId=${activeOrganizationId}` : '';
+      return api.get<Board[]>(`/boards${query}`);
+    },
+    enabled: isAuthenticated && isReady,
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/boards/${id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['boards'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['boards'] });
+      toast.success('Board deleted');
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete board');
+    },
   });
 
   return (
@@ -35,7 +47,7 @@ export default function BoardGrid() {
           <CreateBoardDialog />
         </DashboardHeader>
 
-        {isLoading ? (
+        {isLoading || !isReady ? (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="rounded-xl bg-white p-5 shadow-sm">

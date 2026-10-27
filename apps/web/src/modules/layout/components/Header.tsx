@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import OrganizationSwitcher from '@/modules/organization/containers/OrganizationSwitcher';
 
 interface HeaderUser {
   name: string;
@@ -14,41 +15,47 @@ interface HeaderProps {
 export default function Header({ user, onLogout }: HeaderProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-white/80 backdrop-blur-lg">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1 font-heading text-lg font-bold tracking-tight text-foreground"
-        >
-          <span className="text-primary">task</span>flow
-        </Link>
-        <nav className="flex items-center gap-4">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-3">
+        <div className="flex items-center gap-6">
           <Link
             href="/dashboard"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="inline-flex items-center gap-1 font-heading text-lg font-bold tracking-tight text-foreground"
           >
-            Boards
+            <span className="text-primary">task</span>flow
           </Link>
-          <Link
-            href="/calendar"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Calendar
-          </Link>
-        </nav>
-        {user && (
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">{user.name}</span>
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
-              {user.name.charAt(0).toUpperCase()}
-            </span>
-            <button
-              onClick={onLogout}
-              className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground"
+          <nav className="flex items-center gap-4">
+            <Link
+              href="/dashboard"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              Logout
-            </button>
-          </div>
-        )}
+              Boards
+            </Link>
+            <Link
+              href="/calendar"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Calendar
+            </Link>
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-4">
+          {user && <OrganizationSwitcher />}
+          {user && (
+            <div className="flex items-center gap-3 border-l border-border pl-4">
+              <span className="text-sm text-muted-foreground">{user.name}</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+              <button
+                onClick={onLogout}
+                className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
