@@ -38,6 +38,10 @@ export class CalendarQueryDto {
 
   @IsString()
   @IsOptional()
+  organizationId?: string;
+
+  @IsString()
+  @IsOptional()
   boardId?: string;
 
   @IsEnum(Priority)
