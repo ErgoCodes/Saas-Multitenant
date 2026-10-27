@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import { Priority } from '@task-manager/types';
+import { CreateTaskDto, Priority, TaskStatus } from '@task-manager/types';
 import InlineTaskForm from '@/modules/board/components/InlineTaskForm';
 
 export default function CreateTaskForm({
@@ -17,23 +17,38 @@ export default function CreateTaskForm({
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState(Priority.MEDIUM);
+  const [status, setStatus] = useState(TaskStatus.TODO);
+  const [dueDate, setDueDate] = useState('');
   const queryClient = useQueryClient();
 
+  const resetForm = () => {
+    setOpen(false);
+    setTitle('');
+    setDescription('');
+    setPriority(Priority.MEDIUM);
+    setStatus(TaskStatus.TODO);
+    setDueDate('');
+  };
+
   const mutation = useMutation({
-    mutationFn: (data: { title: string; description?: string; priority: Priority; listId: string }) =>
-      api.post('/tasks', data),
+    mutationFn: (data: CreateTaskDto) => api.post('/tasks', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['board', boardId] });
-      setOpen(false);
-      setTitle('');
-      setDescription('');
-      setPriority(Priority.MEDIUM);
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      resetForm();
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate({ title, description: description || undefined, priority, listId });
+    mutation.mutate({
+      title,
+      description: description || undefined,
+      priority,
+      status,
+      dueDate: dueDate || undefined,
+      listId,
+    });
   };
 
   if (!open) {
@@ -58,14 +73,13 @@ export default function CreateTaskForm({
       setDescription={setDescription}
       priority={priority}
       setPriority={setPriority}
+      status={status}
+      setStatus={setStatus}
+      dueDate={dueDate}
+      setDueDate={setDueDate}
       loading={mutation.isPending}
       onSubmit={handleSubmit}
-      onCancel={() => {
-        setOpen(false);
-        setTitle('');
-        setDescription('');
-        setPriority(Priority.MEDIUM);
-      }}
+      onCancel={resetForm}
     />
   );
 }
