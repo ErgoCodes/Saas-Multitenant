@@ -4,6 +4,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { join } from 'path';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { OrganizationsModule } from './organizations/organizations.module';
 import { BoardsModule } from './boards/boards.module';
 import { ListsModule } from './lists/lists.module';
 import { TasksModule } from './tasks/tasks.module';
@@ -23,6 +24,7 @@ import { WebsocketModule } from './websocket/websocket.module';
     ]),
     PrismaModule,
     AuthModule,
+    OrganizationsModule,
     BoardsModule,
     ListsModule,
     TasksModule,
