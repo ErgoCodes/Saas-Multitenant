@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsEnum, IsNotEmpty, IsISO8601, MaxLength } from 'class-validator';
-import { Priority } from '@task-manager/types';
+import { Priority, TaskStatus } from '@task-manager/types';
 
 export class CreateTaskDto {
   @IsString()
@@ -16,6 +16,10 @@ export class CreateTaskDto {
   @IsOptional()
   priority?: Priority;
 
+  @IsEnum(TaskStatus)
+  @IsOptional()
+  status?: TaskStatus;
+
   @IsString()
   @IsNotEmpty()
   listId: string;
@@ -23,4 +27,9 @@ export class CreateTaskDto {
   @IsISO8601({ strict: true })
   @IsOptional()
   dueDate?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  assigneeId?: string;
 }
