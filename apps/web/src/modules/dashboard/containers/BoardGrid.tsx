@@ -1,7 +1,9 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth';
+import { useActiveOrganization } from '@/modules/organization/hooks/useActiveOrganization';
 import { api } from '@/lib/api';
 import { Board } from '@task-manager/types';
 import { Skeleton } from '@task-manager/ui';
@@ -11,6 +13,7 @@ import DashboardHeader from '@/modules/dashboard/components/DashboardHeader';
 
 export default function BoardGrid() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const { activeOrganizationId, isReady } = useActiveOrganization();
   const queryClient = useQueryClient();
 
   const {
@@ -18,74 +21,83 @@ export default function BoardGrid() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['boards'],
-    queryFn: () => api.get<Board[]>('/boards'),
-    enabled: isAuthenticated,
+    queryKey: ['boards', activeOrganizationId],
+    queryFn: () => {
+      const query = activeOrganizationId ? `?organizationId=${activeOrganizationId}` : '';
+      return api.get<Board[]>(`/boards${query}`);
+    },
+    enabled: isAuthenticated && isReady,
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/boards/${id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['boards'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['boards'] });
+      toast.success('Board deleted');
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete board');
+    },
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-7xl px-6 py-8">
-        <DashboardHeader boardCount={boards?.length}>
-          <CreateBoardDialog />
-        </DashboardHeader>
+    <main className="mx-auto flex-1 w-full max-w-[1600px] px-6 py-8 sm:px-8 lg:px-12">
+      <DashboardHeader boardCount={boards?.length}>
+        <CreateBoardDialog />
+      </DashboardHeader>
 
-        {isLoading ? (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="rounded-xl bg-white p-5 shadow-sm">
-                <Skeleton className="mb-3 h-5 w-3/4" />
-                <Skeleton className="mb-4 h-3 w-1/2" />
-                <div className="flex gap-2">
-                  <Skeleton className="h-6 w-16" />
-                  <Skeleton className="h-6 w-16" />
-                </div>
+      {isLoading || !isReady ? (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex min-h-[175px] flex-col justify-between rounded-xl border border-border/80 bg-white p-5 shadow-xs">
+              <div>
+                <Skeleton className="mb-3.5 h-9 w-9 rounded-lg" />
+                <Skeleton className="mb-2 h-5 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
               </div>
-            ))}
-          </div>
-        ) : isError ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-              <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-              </svg>
+              <div className="border-t border-border/40 pt-3">
+                <Skeleton className="h-4 w-20" />
+              </div>
             </div>
-            <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">
-              Failed to load boards
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">Something went wrong. Please try again.</p>
+          ))}
+        </div>
+      ) : isError ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+            <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
           </div>
-        ) : boards?.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-            </div>
-            <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">
-              No boards yet
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Create your first board and start organizing your tasks.
-            </p>
+          <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">
+            Failed to load boards
+          </h3>
+          <p className="mt-1 text-sm text-muted-foreground">Something went wrong. Please try again.</p>
+        </div>
+      ) : boards?.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {boards?.map((board) => (
-              <BoardCard
-                key={board.id}
-                board={board}
-                onDelete={() => deleteMutation.mutate(board.id)}
-              />
-            ))}
-          </div>
-        )}
-      </main>
-    </div>
+          <h3 className="mt-4 font-heading text-lg font-semibold text-foreground">
+            No boards yet
+          </h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Create your first board and start organizing your tasks.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          {boards?.map((board) => (
+            <BoardCard
+              key={board.id}
+              board={board}
+              onDelete={() => deleteMutation.mutate(board.id)}
+            />
+          ))}
+        </div>
+      )}
+    </main>
   );
 }

@@ -1,4 +1,13 @@
-import { IsString, IsOptional, IsEnum, IsISO8601, IsNumber, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsISO8601,
+  IsNumber,
+  IsNotEmpty,
+  MaxLength,
+  ValidateIf,
+} from 'class-validator';
 import { Priority, TaskStatus } from '@task-manager/types';
 
 export class UpdateTaskDto {
@@ -28,7 +37,14 @@ export class UpdateTaskDto {
   @IsOptional()
   listId?: string;
 
+  @ValidateIf((_, value) => value !== null && value !== undefined)
   @IsISO8601({ strict: true })
   @IsOptional()
-  dueDate?: string;
+  dueDate?: string | null;
+
+  @ValidateIf((_, value) => value !== null && value !== undefined)
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  assigneeId?: string | null;
 }

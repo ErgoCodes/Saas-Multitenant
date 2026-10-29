@@ -2,17 +2,31 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
 import { api } from '@/lib/api';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Button, Input, Textarea, Label } from '@task-manager/ui';
+import { useOrganizationStore } from '@/stores/organization';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  Button,
+  Input,
+  Textarea,
+  Label,
+} from '@task-manager/ui';
 
 export default function CreateBoardDialog() {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const activeOrganizationId = useOrganizationStore((s) => s.activeOrganizationId);
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (data: { title: string; description?: string }) => api.post('/boards', data),
+    mutationFn: (data: { title: string; description?: string; organizationId?: string }) =>
+      api.post('/boards', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['boards'] });
       setOpen(false);
@@ -23,18 +37,20 @@ export default function CreateBoardDialog() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate({ title, description: description || undefined });
+    mutation.mutate({
+      title,
+      description: description || undefined,
+      organizationId: activeOrganizationId || undefined,
+    });
   };
 
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-primary/90 hover:shadow-md active:scale-[0.97]"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/20 transition-[background-color,transform,box-shadow] duration-150 ease-out hover:bg-primary/90 hover:shadow-md hover:shadow-primary/30 active:scale-[0.97]"
       >
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        </svg>
+        <Plus className="h-4 w-4" />
         New Board
       </button>
 
@@ -46,15 +62,31 @@ export default function CreateBoardDialog() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="board-title">Title</Label>
-              <Input id="board-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Product Launch" required />
+              <Input
+                id="board-title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Product Launch"
+                required
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="board-desc">Description (optional)</Label>
-              <Textarea id="board-desc" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What's this board about?" rows={3} />
+              <Textarea
+                id="board-desc"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="What's this board about?"
+                rows={3}
+              />
             </div>
             <DialogFooter>
-              <Button type="button" variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button type="submit" loading={mutation.isPending}>Create Board</Button>
+              <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" loading={mutation.isPending}>
+                Create Board
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>

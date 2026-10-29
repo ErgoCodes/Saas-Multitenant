@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   DndContext,
@@ -15,12 +15,15 @@ import {
   type DragOverEvent,
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
+import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth';
 import { api } from '@/lib/api';
-import { Board, List, Task } from '@task-manager/types';
+import { getSocket } from '@/lib/socket';
+import { Board, List, Task, TaskStatus, WsEvent } from '@task-manager/types';
 import { Skeleton } from '@task-manager/ui';
 import ListColumn from '@/modules/board/components/ListColumn';
 import CreateListForm from '@/modules/board/containers/CreateListForm';
+import TaskDetailSheet from '@/modules/board/containers/TaskDetailSheet';
 import { TaskCardView } from '@/modules/board/components/TaskCard';
 
 interface BoardViewProps {
@@ -31,6 +34,7 @@ export default function BoardView({ boardId }: BoardViewProps) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const queryClient = useQueryClient();
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const { data: board, isLoading } = useQuery({
     queryKey: ['board', boardId],
@@ -39,10 +43,87 @@ export default function BoardView({ boardId }: BoardViewProps) {
     enabled: isAuthenticated,
   });
 
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const invalidate = () => {
+      queryClient.invalidateQueries({ queryKey: ['board', boardId] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+    };
+
+    const joinAndListen = () => {
+      socket.emit(WsEvent.JOIN_BOARD, boardId);
+      socket.on(WsEvent.TASK_CREATED, invalidate);
+      socket.on(WsEvent.TASK_UPDATED, invalidate);
+      socket.on(WsEvent.TASK_MOVED, invalidate);
+      socket.on(WsEvent.TASK_DELETED, invalidate);
+      socket.on(WsEvent.LIST_CREATED, invalidate);
+      socket.on(WsEvent.LIST_UPDATED, invalidate);
+      socket.on(WsEvent.LIST_DELETED, invalidate);
+      socket.on(WsEvent.BOARD_UPDATED, invalidate);
+    };
+
+    if (socket.connected) {
+      joinAndListen();
+    }
+    socket.on('connect', joinAndListen);
+
+    return () => {
+      socket.emit(WsEvent.LEAVE_BOARD, boardId);
+      socket.off('connect', joinAndListen);
+      socket.off(WsEvent.TASK_CREATED, invalidate);
+      socket.off(WsEvent.TASK_UPDATED, invalidate);
+      socket.off(WsEvent.TASK_MOVED, invalidate);
+      socket.off(WsEvent.TASK_DELETED, invalidate);
+      socket.off(WsEvent.LIST_CREATED, invalidate);
+      socket.off(WsEvent.LIST_UPDATED, invalidate);
+      socket.off(WsEvent.LIST_DELETED, invalidate);
+      socket.off(WsEvent.BOARD_UPDATED, invalidate);
+    };
+  }, [boardId, queryClient]);
+
   const updateTaskMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<Task> }) => api.patch(`/tasks/${id}`, data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['board', boardId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['board', boardId] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['board', boardId] });
+      toast.error('Failed to update task');
+    },
   });
+
+  const deleteListMutation = useMutation({
+    mutationFn: (listId: string) => api.delete(`/lists/${listId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['board', boardId] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      toast.success('List deleted');
+    },
+    onError: () => {
+      toast.error('Failed to delete list');
+    },
+  });
+
+  function handleStatusChange(task: Task, nextStatus: TaskStatus) {
+    queryClient.setQueryData(['board', boardId], (old: typeof board) => {
+      if (!old) return old;
+      return {
+        ...old,
+        lists: old.lists?.map((list) => ({
+          ...list,
+          tasks: list.tasks?.map((t) => (t.id === task.id ? { ...t, status: nextStatus } : t)),
+        })),
+      };
+    });
+
+    updateTaskMutation.mutate({
+      id: task.id,
+      data: { status: nextStatus },
+    });
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -119,18 +200,19 @@ export default function BoardView({ boardId }: BoardViewProps) {
     const oldListId = activeList.id;
     const newListId = overList.id;
     const oldIndex = activeList.tasks?.findIndex((t: Task) => t.id === active.id) ?? -1;
-    const overIndex = overList.tasks?.findIndex((t: Task) => t.id === over.id) ?? -1;
+    const rawOverIndex = overList.tasks?.findIndex((t: Task) => t.id === over.id) ?? -1;
+    const targetOrder = rawOverIndex >= 0 ? rawOverIndex : Math.max(0, (overList.tasks?.length ?? 1) - 1);
 
-    if (oldListId === newListId && oldIndex === overIndex) return;
+    if (oldListId === newListId && oldIndex === targetOrder && activeTask?.listId === newListId) return;
 
-    if (oldListId === newListId) {
+    if (oldListId === newListId && rawOverIndex >= 0) {
       queryClient.setQueryData(['board', boardId], (old: typeof board) => {
         if (!old) return old;
         return {
           ...old,
           lists: old.lists?.map((list: List & { tasks: Task[] }) => {
             if (list.id !== oldListId) return list;
-            const reordered = arrayMove(list.tasks || [], oldIndex, overIndex);
+            const reordered = arrayMove(list.tasks || [], oldIndex, rawOverIndex);
             return { ...list, tasks: reordered };
           }),
         };
@@ -139,7 +221,7 @@ export default function BoardView({ boardId }: BoardViewProps) {
 
     updateTaskMutation.mutate({
       id: active.id as string,
-      data: { listId: newListId, order: overIndex },
+      data: { listId: newListId, order: targetOrder },
     });
   }
 
@@ -177,7 +259,14 @@ export default function BoardView({ boardId }: BoardViewProps) {
               {board.lists
                 ?.sort((a: List & { tasks: Task[] }, b: List & { tasks: Task[] }) => a.order - b.order)
                 .map((list: List & { tasks: Task[] }) => (
-                  <ListColumn key={list.id} list={list} boardId={boardId} />
+                  <ListColumn
+                    key={list.id}
+                    list={list}
+                    boardId={boardId}
+                    onSelectTask={setSelectedTask}
+                    onStatusChange={handleStatusChange}
+                    onDeleteList={(id) => deleteListMutation.mutate(id)}
+                  />
                 ))}
               <CreateListForm boardId={boardId} />
             </div>
@@ -190,6 +279,14 @@ export default function BoardView({ boardId }: BoardViewProps) {
               ) : null}
             </DragOverlay>
           </DndContext>
+
+          <TaskDetailSheet
+            task={selectedTask}
+            lists={board.lists || []}
+            boardId={boardId}
+            organizationId={board.organizationId}
+            onClose={() => setSelectedTask(null)}
+          />
         </>
       ) : (
         <div className="flex flex-col items-center justify-center py-20 text-center">

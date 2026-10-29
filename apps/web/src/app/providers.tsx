@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState, type ReactNode } from 'react';
+import { TooltipProvider } from '@task-manager/ui';
 import { useSocket } from '@/hooks/useSocket';
 
 function SocketProvider({ children }: { children: ReactNode }) {
@@ -14,7 +15,9 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SocketProvider>{children}</SocketProvider>
+      <TooltipProvider delayDuration={200} skipDelayDuration={300}>
+        <SocketProvider>{children}</SocketProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }
